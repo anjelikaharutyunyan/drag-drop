@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="board">
+    <div class="column" id="todo" draggable="true">
+      <h2>To Do</h2>
+      <button id="add-task">Add Task</button>
+      <div class="card-container" id="todo-container">
+      </div>
+    </div>
+    <div class="column" id="in-progress" draggable="true">
+      <h2>In Progress</h2>
+      <div class="card-container" id="in-progress-container">
+      </div>
+    </div>
+    <div class="column" id="done" draggable="true">
+      <h2>Add</h2>
+      <div class="card-container" id="done-container">
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>
