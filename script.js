@@ -1,44 +1,107 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const tasks = document.querySelectorAll('.task');
-    const inProgress = document.getElementById('inprogress');
-    const todo = document.getElementById('todo')
-    const done = document.getElementById('done');
+const addButton = document.getElementById("add-task");
+let cardId = 0;
+const cards = [];
 
-    tasks.forEach(task => {
-        task.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', e.target.id)
-            task.classList.add("is-dragging");
-        });
-    });
+const addCard = (event) => {
+    const cardTitle = prompt("Enter the title of the task");
+    if (cardTitle) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.id = `card-${cardId}`;
+        card.draggable = true;
+        card.textContent = cardTitle;
 
-    inProgress.addEventListener('dragover', (e) => {
-        e.preventDefault();
-    });
+        const closeCard = document.createElement('i');
+        closeCard.className = "fa-solid fa-xmark";
+        closeCard.addEventListener('click', handleTaskDelete);
+        card.append(closeCard);
 
-    inProgress.addEventListener('drop', (e) => {
-        const taskId = e.dataTransfer.getData('text/plain');
-        const task = document.getElementById(taskId);
-        e.target.append(task)
-    });
+        card.addEventListener("dragstart", dragStart);
+        card.addEventListener("dragend", dragEnd);
 
+        cards.push(cardTitle);
+        console.log(cards);
 
-    done.addEventListener('dragover', (e) => {
-        e.preventDefault();
-    });
+        const column = event.target.closest(".column");
+        const container = column.querySelector(".card-container");
+        container.appendChild(card);
+        cardId++;
+    }
+};
 
-    done.addEventListener('drop', (e) => {
-        const taskId = e.dataTransfer.getData('text/plain');
-        const task = document.getElementById(taskId);
-        done.append(task);
-    });
+const addTaskButtons = document.querySelectorAll('.add-task-btn');
+addTaskButtons.forEach(button => button.addEventListener('click', addCard));
 
-    todo.addEventListener('dragover', (e) => {
-        e.preventDefault();
-    });
-    todo.addEventListener('drop', (e) => {
-        const taskId = e.dataTransfer.getData('text/plain');
-        const task = document.getElementById(taskId);
-        todo.append(task);
-    });
+function dragStart(e) {
+    e.dataTransfer.setData("text/plain", e.target.id);
+    setTimeout(() => {
+        e.target.classList.add("hide");
+    }, 0);
+}
 
+function dragEnd(e) {
+    e.target.classList.remove("hide");
+}
+
+const columns = document.querySelectorAll(".card-container");
+columns.forEach((column) => {
+    column.addEventListener("dragover", dragOver);
+    column.addEventListener("dragenter", dragEnter);
+    column.addEventListener("dragleave", dragLeave);
+    column.addEventListener("drop", drop);
 });
+
+function dragOver(e) {
+    e.preventDefault();
+}
+
+function dragEnter(e) {
+    e.preventDefault();
+    this.classList.add("hovered");
+}
+
+function dragLeave() {
+    this.classList.remove("hovered");
+}
+
+function drop(e) {
+    this.classList.remove("hovered");
+    const cardId = e.dataTransfer.getData("text/plain");
+    const card = document.getElementById(cardId);
+    e.target.appendChild(card);
+}
+
+function search() {
+    const input = document.getElementById('search-bar').value.toLowerCase();
+    const searchResultsContainer = document.getElementById('search-results');
+
+    searchResultsContainer.innerHTML = '';
+
+    if (input === '') {
+        return;
+    }
+
+    const results = cards.filter(cardTitle => cardTitle.toLowerCase().includes(input));
+    results.forEach(result => {
+        let resultItem = document.createElement('div');
+        resultItem.className = 'search-result-item';
+        resultItem.textContent = result;
+        searchResultsContainer.appendChild(resultItem);
+    });
+}
+
+const searchInput = document.getElementById('search-bar');
+searchInput.addEventListener('keyup', search);
+
+
+const handleTaskDelete = (event) => {
+    const card = event.target.parentElement;
+    const cardTitle = card.textContent;
+    const cardIndex = cards.indexOf(cardTitle);
+
+    if (cards.includes(cardTitle)) {
+        cards.splice(cardIndex, 1);
+    }
+
+    card.remove();
+}
